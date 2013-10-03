@@ -1,0 +1,3 @@
+def is_image?(file)
+  file.to_s.include?(".gif") or file.to_s.include?(".png") or file.to_s.include?(".jpg")
+end
