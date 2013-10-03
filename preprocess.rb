@@ -1,9 +1,7 @@
 load 'utils.rb'
 load 'image.rb'  
     
-#indir = '/Users/a0mish/Dropbox/sample images/Bar Charts'
 indir = 'images/'
-#outdir = '/Users/a0mish/Projects/data'
 outfile = 'out/features.csv'
 
 files = Dir.entries(indir)
@@ -11,7 +9,7 @@ files = Dir.entries(indir)
 images=[]
 
 for f in files
-  if is_image?(f)
+  if is_image? f
     image = Image.new(indir + f)
     images.push(image)
   end
@@ -25,4 +23,3 @@ for image in images
 end
 
 File.open(outfile, 'w') {|f| f.write(s) }
-

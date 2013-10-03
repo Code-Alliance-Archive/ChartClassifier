@@ -8,6 +8,7 @@ class Image
   FEATURE_NAMES = ['a', 'b']
   
   def initialize(file)
+    @file_path = file
     @image =  OpenCV::IplImage.load(file)
   end
   
@@ -17,17 +18,26 @@ class Image
   end
   
   
-  #detect objects
-  #http://www.informedgeek.com/2011/07/detecting-objects-in-a-photograph-with-opencv-part-2/
-  #http://www.informedgeek.com/2011/07/detecting-objects-in-a-photograph-with-opencv/
-
   def detect_rectanges
-    classifier = 'haarcascade_eye.xml'
-    detector = OpenCV::CvHaarClassifierCascade::load(classifier)
-    detector.detect_objects(image) do |region|
-      color = OpenCV::CvColor::Blue
-      image.rectangle! region.top_left, region.bottom_right, :color => color
+    rectanges = []
+    cvmat = OpenCV::CvMat.load(@file_path)
+    cvmat = cvmat.BGR2GRAY
+    canny = cvmat.canny(50, 150)
+    contour = canny.find_contours(:mode => OpenCV::CV_RETR_LIST, :method => OpenCV::CV_CHAIN_APPROX_SIMPLE)
+    
+    while contour
+      # No "holes" please (aka. internal contours)
+      unless contour.hole?
+        box = contour.bounding_rect
+        puts "BOUNDING RECT FOUND"
+        cvmat.rectangle! box.top_left, box.bottom_right, :color => OpenCV::CvColor::Black
+        #box = contour.min_area_rect
+        rectanges.push(box)
+      end
+      contour = contour.h_next
     end
+    
+    rectanges
   end
   
 end
